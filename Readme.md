@@ -13,6 +13,7 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 ### Now
 - [ ] Design
 - [ ] Allow todos to be checked off
+- [ ] Allow todos to be edited
 - [ ] Delete Todos older than two days
 - [ ] Display todos from the last day for import
 - [ ] Release
