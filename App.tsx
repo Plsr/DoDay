@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, TextInput, Button } from 'react-native';
 import { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TodoItem from './src/components/TodoItem'
@@ -42,41 +41,63 @@ export default function App() {
   }
 
   return (
-    <AppWrapper>
-      <TitleText>Today</TitleText>
-      { todos.map((todo) => {
-        if (todo.isCompleted === true) return
-        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-      })}
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <TextInput 
-        placeholder="🥑 Buy some avocados..."
-        value={todoValue}
-        onChangeText={setTodoValue}
-      />
-      <Button 
-        onPress={handlePress}
-        disabled={!todoValue}
-        title="submit"
-      />
-      <DeleteAllButton
-        onPress={handleDeleteAllPress}
-        title="Delete all todos"
-      />
-      <CompletedText>Completed Todos</CompletedText>
-      { todos.map((todo) => {
-        if (todo.isCompleted === false) return
-        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-      })}
-      <StatusBar style="auto" />
-    </AppWrapper>
+    <SafeWrapper>
+      <AppWrapper>
+        <TitleText>Today</TitleText>
+        { todos.map((todo) => {
+          if (todo.isCompleted === true) return
+          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+        })}
+        <TodoInput 
+          placeholder="🥑 Buy some avocados..."
+          value={todoValue}
+          onChangeText={setTodoValue}
+        />
+        <SubmitButton 
+          onPress={handlePress}
+          disabled={!todoValue}
+        >
+          <SubmitText>Add todo</SubmitText>
+        </SubmitButton>
+        <DeleteAllButton
+          onPress={handleDeleteAllPress}
+          title="Delete all todos"
+        />
+        <CompletedText>Completed Todos</CompletedText>
+        { todos.map((todo) => {
+          if (todo.isCompleted === false) return
+          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+        })}
+        <StatusBar style="auto" />
+      </AppWrapper>
+    </SafeWrapper>
   );
 }
+
+const SubmitButton = styled.Pressable`
+  background-color: #ff5252;
+  padding: 10px; 
+  border-radius: 4px;
+  margin: 20px 0;
+`
+  
+const SubmitText = styled.Text`
+  color: #f5e6e6;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+`
+
+const TodoInput = styled.TextInput`
+  padding: 20px 10px;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  background-color: white;
+`
 
 const AppWrapper = styled.View`
   background-color: #f0f3f7;
   height: 100%;
-  padding-top: 50px;
   padding-left: 20px;
   padding-right: 20px;
 `
@@ -98,4 +119,8 @@ const CompletedText = styled.Text`
 const DeleteAllButton = styled.Button`
   margin-top: 40px;
   color: red;
+`
+
+const SafeWrapper = styled.SafeAreaView`
+  background-color: #f0f3f7;
 `

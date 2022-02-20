@@ -23,3 +23,8 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 - [ ] Cloud sync of some kind
 - [ ] Tags & Filterable by tags
 - [ ] Sharing
+
+
+### Random Ideas
+- [ ] Change colorscheme based on date
+- [ ] Display emoji besides Today headline based on day (or based on local weather/time)
