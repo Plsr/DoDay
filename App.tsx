@@ -24,7 +24,6 @@ export default function App() {
 
   const initialGetTodos = async () => {
     const todos = await getTodos()
-    if (todos) console.log(todos.todos)
     setTodos(todos?.todos ? todos.todos : [])
   }
 
