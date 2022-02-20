@@ -4,9 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import TodoItem from './src/components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from './src/util/Todo'
-import { saveTodo, updateTodo, getTodos } from './src/util/TodoStorage';
-
-const TODO_STORAGE_KEY = "@doday_todos"
+import { saveTodo, updateTodo, getTodos, deleteAllTodos } from './src/util/TodoStorage';
 
 export default function App() {
   const [todoValue, setTodoValue] = useState("")
@@ -17,7 +15,7 @@ export default function App() {
   }, [])
 
   const handleDeleteAllPress = async() => {
-    AsyncStorage.removeItem(TODO_STORAGE_KEY)
+    deleteAllTodos()
     setTodos([])
   }
 

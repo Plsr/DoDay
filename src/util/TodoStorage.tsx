@@ -18,6 +18,11 @@ export async function saveTodo(value: Todo): Promise<Todo[] | null> {
   }
 }
 
+export async function deleteAllTodos(): Promise<boolean> {
+  await AsyncStorage.removeItem(TODO_STORAGE_KEY)
+  return true
+}
+
 export async function getTodos(): Promise<Todos | null> {
   try {
     const jsonValue = await AsyncStorage.getItem(TODO_STORAGE_KEY)
