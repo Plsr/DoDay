@@ -34,8 +34,8 @@ export default function App() {
 
   const handleCheckboxPress = async (todo: Todo) => {
     const currentTodos = [...todos]
-    const checkedTodo = currentTodos.find(t => t.id == todo.id)
-    if (checkedTodo) checkedTodo.isCompleted = true
+    const updateCandidate = currentTodos.find(t => t.id == todo.id)
+    if (updateCandidate) updateCandidate.isCompleted = !updateCandidate.isCompleted
     await updateTodo(todo)
     setTodos([...currentTodos])
   }
@@ -48,12 +48,12 @@ export default function App() {
           if (todo.isCompleted === true) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
-        <TodoInput 
+        <TodoInput
           placeholder="🥑 Buy some avocados..."
           value={todoValue}
           onChangeText={setTodoValue}
         />
-        <SubmitButton 
+        <SubmitButton
           onPress={handlePress}
           disabled={!todoValue}
         >
@@ -76,11 +76,11 @@ export default function App() {
 
 const SubmitButton = styled.Pressable`
   background-color: #ff5252;
-  padding: 10px; 
+  padding: 10px;
   border-radius: 4px;
   margin: 20px 0;
 `
-  
+
 const SubmitText = styled.Text`
   color: #f5e6e6;
   font-weight: 700;
