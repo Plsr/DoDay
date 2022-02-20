@@ -47,7 +47,7 @@ export default function App() {
       <TitleText>Today</TitleText>
       { todos.map((todo) => {
         if (todo.isCompleted === true) return
-        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <Text>Open up App.tsx to start working on your app!</Text>
       <TextInput 
@@ -67,7 +67,7 @@ export default function App() {
       <CompletedText>Completed Todos</CompletedText>
       { todos.map((todo) => {
         if (todo.isCompleted === false) return
-        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <StatusBar style="auto" />
     </AppWrapper>
