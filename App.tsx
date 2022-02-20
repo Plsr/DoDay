@@ -5,24 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import TodoItem from './src/components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from './src/util/Todo'
-
-export interface TodoInterface {
-  createdAt: Date,
-  text: string,
-  tags?: string[],
-  isCompleted: boolean,
-  id: string
-}
-
-interface Todos {
-    todos: TodoInterface[]
-}
+import { saveTodo, updateTodo, getTodos } from './src/util/TodoStorage';
 
 const TODO_STORAGE_KEY = "@doday_todos"
 
 export default function App() {
   const [todoValue, setTodoValue] = useState("")
-  const [todos, setTodos] = useState<TodoInterface[]>([])
+  const [todos, setTodos] = useState<Todo[]>([])
 
   useEffect(() => {
     initialGetTodos()
@@ -35,66 +24,19 @@ export default function App() {
 
   const initialGetTodos = async () => {
     const todos = await getTodos()
-    if (todos) console.log(todos.todos)
     setTodos(todos?.todos ? todos.todos : [])
   }
 
-  const handlePress = () => {
+  const handlePress = async () => {
     if(!todoValue) return
-    // console.log(todoValue)
-    storeData(new Todo(todoValue))
+    const newTodos = await saveTodo(new Todo(todoValue))
+    setTodos(newTodos ? newTodos : todos)
   }
 
-  const getTodos = async (): Promise<Todos | null> => {
-    try {
-      const jsonValue = await AsyncStorage.getItem(TODO_STORAGE_KEY)
-      return jsonValue != null ? JSON.parse(jsonValue) as Todos : null
-    } catch (error) {
-      console.error(error)
-      return null
-    }
-  }
-
-  const storeData = async (value: TodoInterface) => {
-    try {
-      const existingTodos = await getTodos()
-      if (existingTodos) {
-        // console.log(existingTodos)
-      }
-      const todos = existingTodos?.todos ? [...existingTodos.todos, value] : [value]
-      const jsonValue = JSON.stringify({ todos })
-      await AsyncStorage.setItem(TODO_STORAGE_KEY, jsonValue)
-      setTodos([...todos, value])
-    } catch (e) {
-      // saving error
-      console.error(e)
-    }
-  }
-
-  // TODO: Finish update todo thingy, update properties
-  const updateTodo = async (todo: TodoInterface) => {
-    try {
-      const existingTodos = await getTodos()
-      if (!existingTodos) return
-      const updatedTodos = existingTodos.todos.map(t => {
-        return t.id === todo.id ? todo : t
-      })
-      console.log(updatedTodos)
-      const jsonValue = JSON.stringify({ todos: updatedTodos })
-      console.log(jsonValue)
-      await AsyncStorage.setItem(TODO_STORAGE_KEY, jsonValue)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  const handleCheckboxPress = async (todo: TodoInterface) => {
-    console.log("pressed")
-    console.log(todo.id)
+  const handleCheckboxPress = async (todo: Todo) => {
     const currentTodos = [...todos]
     const checkedTodo = currentTodos.find(t => t.id == todo.id)
     if (checkedTodo) checkedTodo.isCompleted = true
-    console.log(currentTodos)
     await updateTodo(todo)
     setTodos([...currentTodos])
   }
@@ -104,7 +46,7 @@ export default function App() {
       <TitleText>Today</TitleText>
       { todos.map((todo) => {
         if (todo.isCompleted === true) return
-        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <Text>Open up App.tsx to start working on your app!</Text>
       <TextInput 
@@ -124,7 +66,7 @@ export default function App() {
       <CompletedText>Completed Todos</CompletedText>
       { todos.map((todo) => {
         if (todo.isCompleted === false) return
-        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <StatusBar style="auto" />
     </AppWrapper>

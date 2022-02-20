@@ -1,5 +1,5 @@
 
-import { Todo } from "../util/Todo"
+import Todo from "../util/Todo"
 import styled from 'styled-components/native';
 
 type TodoProps = {
