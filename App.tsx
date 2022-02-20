@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { Text, TextInput, Button } from 'react-native';
 import { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Todo from './src/components/Todo'
+import TodoItem from './src/components/TodoItem'
 import styled from 'styled-components/native'
-import uuid from 'react-native-uuid'
+import Todo from './src/util/Todo'
 
 export interface TodoInterface {
   createdAt: Date,
@@ -42,16 +42,7 @@ export default function App() {
   const handlePress = () => {
     if(!todoValue) return
     // console.log(todoValue)
-    storeData(buildTodo(todoValue))
-  }
-
-  const buildTodo = (todoText: string): TodoInterface => {
-    return {
-      text: todoText,
-      createdAt: new Date(),
-      isCompleted: false,
-      id: uuid.v4() as string
-    }
+    storeData(new Todo(todoValue))
   }
 
   const getTodos = async (): Promise<Todos | null> => {
@@ -113,7 +104,7 @@ export default function App() {
       <TitleText>Today</TitleText>
       { todos.map((todo) => {
         if (todo.isCompleted === true) return
-        return (<Todo todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <Text>Open up App.tsx to start working on your app!</Text>
       <TextInput 
@@ -133,7 +124,7 @@ export default function App() {
       <CompletedText>Completed Todos</CompletedText>
       { todos.map((todo) => {
         if (todo.isCompleted === false) return
-        return (<Todo todo={todo} checkboxPress={handleCheckboxPress} />)
+        return (<TodoItem todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
       <StatusBar style="auto" />
     </AppWrapper>

@@ -1,13 +1,13 @@
 
-import { TodoInterface } from "../../App"
+import { Todo } from "../util/Todo"
 import styled from 'styled-components/native';
 
 type TodoProps = {
-  todo: TodoInterface,
-  checkboxPress(todo: TodoInterface): void 
+  todo: Todo,
+  checkboxPress(todo: Todo): void 
 }
 
-export default function Todo({ todo, checkboxPress }: TodoProps) {
+export default function TodoItem({ todo, checkboxPress }: TodoProps) {
 
   const handleCheckboxPress = () => {
     checkboxPress(todo)
