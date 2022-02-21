@@ -23,7 +23,7 @@ export default function TodoItem({ todo, checkboxPress }: TodoProps) {
   )
 }
 
-const Wrapper = styled.View`
+const Wrapper = styled.View<{ completed: boolean }>`
   padding: 20px;
   display: flex;
   flex-direction: row;
@@ -38,7 +38,7 @@ const Wrapper = styled.View`
   opacity: ${props => props.completed ? '0.3' : '1'}
 `
 
-const Checkbox = styled.TouchableOpacity`
+const Checkbox = styled.TouchableOpacity<{ completed: boolean}>`
   width: 15px;
   height: 15px;
   border-radius: 4px;
@@ -52,7 +52,7 @@ const Checkbox = styled.TouchableOpacity`
   background-color: ${props => props.completed ? '#ff5252' : 'transparent'}
 `
 
-const TodoTitle = styled.Text`
+const TodoTitle = styled.Text<{ completed: boolean }>`
   color: #1e242b;
   font-weight: 500;
   text-decoration: ${props => props.completed ? 'line-through' : 'none'}

@@ -8,9 +8,14 @@ import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
-// TODO: Prop types
-export default function HomeScreen({ navigation }) {
+
+type HomeScreenProps = {
+  navigation: NavigationProp<ParamListBase>
+}
+
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [todoValue, setTodoValue] = useState("")
   const [todos, setTodos] = useState<Todo[]>([])
 

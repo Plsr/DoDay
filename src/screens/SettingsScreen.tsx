@@ -3,10 +3,14 @@ import ScreenWrapper from "../components/ScreenWrapper";
 import styled from "styled-components/native";
 import { Feather } from '@expo/vector-icons';
 import { deleteAllTodos } from '../util/TodoStorage';
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 // TODO: Add "are you sure" prompt
-// TODO: Prop types
-export default function SettingsScreen({ navigation }) {
+type SettingsScreenProps = {
+  navigation: NavigationProp<ParamListBase>
+}
+
+export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const handleBackPress = () => {
     navigation.navigate('Home')
   }
