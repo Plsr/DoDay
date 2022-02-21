@@ -3,9 +3,14 @@ import { useState, useEffect } from 'react'
 import TodoItem from '../components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from '../util/Todo'
-import { saveTodo, updateTodo, getTodos, deleteAllTodos } from '../util/TodoStorage';
+import { saveTodo, updateTodo, getTodos } from '../util/TodoStorage';
+import TitleText from '../components/ScreenTitle';
+import ScreenWrapper from '../components/ScreenWrapper';
+import { Feather } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 
-export default function HomeScreen() {
+
+export default function HomeScreen({ navigation }) {
   const [todoValue, setTodoValue] = useState("")
   const [todos, setTodos] = useState<Todo[]>([])
 
@@ -13,10 +18,6 @@ export default function HomeScreen() {
     initialGetTodos()
   }, [])
 
-  const handleDeleteAllPress = async() => {
-    deleteAllTodos()
-    setTodos([])
-  }
 
   const initialGetTodos = async () => {
     const todos = await getTodos()
@@ -27,6 +28,7 @@ export default function HomeScreen() {
     if(!todoValue) return
     const newTodos = await saveTodo(new Todo(todoValue))
     setTodos(newTodos ? newTodos : todos)
+    setTodoValue('')
   }
 
   const handleCheckboxPress = async (todo: Todo) => {
@@ -37,37 +39,40 @@ export default function HomeScreen() {
     setTodos([...currentTodos])
   }
 
+  const handleSettingsPress = () => {
+    navigation.navigate("Settings")
+  }
+
   return (
-    <SafeWrapper>
-      <AppWrapper>
+    <ScreenWrapper>
+      <Header>
         <TitleText>Today</TitleText>
-        { todos.map((todo) => {
-          if (todo.isCompleted === true) return
-          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-        })}
-        <TodoInput
-          placeholder="🥑 Buy some avocados..."
-          value={todoValue}
-          onChangeText={setTodoValue}
-        />
-        <SubmitButton
-          onPress={handlePress}
-          disabled={!todoValue}
-        >
-          <SubmitText>Add todo</SubmitText>
-        </SubmitButton>
-        <DeleteAllButton
-          onPress={handleDeleteAllPress}
-          title="Delete all todos"
-        />
-        <CompletedText>Completed Todos</CompletedText>
-        { todos.map((todo) => {
-          if (todo.isCompleted === false) return
-          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-        })}
-        <StatusBar style="auto" />
-      </AppWrapper>
-    </SafeWrapper>
+        <TouchableOpacity onPress={handleSettingsPress}>
+          <Feather name="settings" size={24} color="1e242b" />
+        </TouchableOpacity>
+      </Header>
+      { todos.map((todo) => {
+        if (todo.isCompleted === true) return
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+      })}
+      <TodoInput
+        placeholder="🥑 Buy some avocados..."
+        value={todoValue}
+        onChangeText={setTodoValue}
+      />
+      <SubmitButton
+        onPress={handlePress}
+        disabled={!todoValue}
+      >
+        <SubmitText>Add todo</SubmitText>
+      </SubmitButton>
+      <CompletedText>Completed Todos</CompletedText>
+      { todos.map((todo) => {
+        if (todo.isCompleted === false) return
+        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+      })}
+      <StatusBar style="auto" />
+    </ScreenWrapper>
   );
 }
 
@@ -85,25 +90,19 @@ const SubmitText = styled.Text`
   text-align: center;
 `
 
+const Header = styled.View`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`
+
 const TodoInput = styled.TextInput`
   padding: 20px 10px;
   border: 1px solid lightgrey;
   border-radius: 4px;
   background-color: white;
-`
-
-const AppWrapper = styled.View`
-  background-color: #f0f3f7;
-  height: 100%;
-  padding-left: 20px;
-  padding-right: 20px;
-`
-
-const TitleText = styled.Text`
-  font-size: 30px;
-  font-weight: 700;
-  color: #1e242b;
-  margin-bottom: 20px;
 `
 
 const CompletedText = styled.Text`
@@ -113,11 +112,3 @@ const CompletedText = styled.Text`
   margin-bottom: 20px;
 `
 
-const DeleteAllButton = styled.Button`
-  margin-top: 40px;
-  color: red;
-`
-
-const SafeWrapper = styled.SafeAreaView`
-  background-color: #f0f3f7;
-`
