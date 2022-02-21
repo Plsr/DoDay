@@ -43,4 +43,5 @@ const TodoTitle = styled.Text<{ completed: boolean }>`
   color: #1e242b;
   font-weight: 500;
   text-decoration: ${props => props.completed ? 'line-through' : 'none'}
+  flex: 1;
 `

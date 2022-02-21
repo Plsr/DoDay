@@ -7,17 +7,22 @@ import { saveTodo, updateTodo, getTodos } from '../util/TodoStorage';
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View, TextInput, Button } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import Modal from "react-native-modal";
+import TodoForm from '../components/TodoForm'
 
 
 type HomeScreenProps = {
   navigation: NavigationProp<ParamListBase>
 }
 
+// TOOD: Smaller components for modal etc
+// TODO: Fix longer todo texts
+// TODO: ScrollView
 export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const [todoValue, setTodoValue] = useState("")
   const [todos, setTodos] = useState<Todo[]>([])
+  const [modalVisible, setModalVisible] = useState(false)
 
   useEffect(() => {
     initialGetTodos()
@@ -29,11 +34,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     setTodos(todos?.todos ? todos.todos : [])
   }
 
-  const handlePress = async () => {
+  const handlePress = async (todoValue: string) => {
     if(!todoValue) return
     const newTodos = await saveTodo(new Todo(todoValue))
     setTodos(newTodos ? newTodos : todos)
-    setTodoValue('')
+    setModalVisible(false)
   }
 
   const handleCheckboxPress = async (todo: Todo) => {
@@ -60,39 +65,38 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         if (todo.isCompleted === true) return
         return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
-      <TodoInput
-        placeholder="🥑 Buy some avocados..."
-        value={todoValue}
-        onChangeText={setTodoValue}
-      />
-      <SubmitButton
-        onPress={handlePress}
-        disabled={!todoValue}
-      >
-        <SubmitText>Add todo</SubmitText>
-      </SubmitButton>
       <CompletedText>Completed Todos</CompletedText>
       { todos.map((todo) => {
         if (todo.isCompleted === false) return
         return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
       })}
+      <Modal
+        style={{ justifyContent: 'flex-end', marginBottom: 60 }}
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}
+        avoidKeyboard
+      >
+        <TodoForm onSubmit={handlePress} />
+      </Modal>
+      <FloatingButton onPress={() => setModalVisible(true)} >
+        <Feather name="plus" size={24} color="#fff" />
+      </FloatingButton>
       <StatusBar style="auto" />
     </ScreenWrapper>
   );
 }
 
-const SubmitButton = styled.Pressable`
+const FloatingButton = styled.TouchableOpacity`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #ff5252;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 20px 0;
-`
-
-const SubmitText = styled.Text`
-  color: #f5e6e6;
-  font-weight: 700;
-  font-size: 16px;
-  text-align: center;
+  border-radius: 100px;
+  width: 60px;
+  height: 60px;
 `
 
 const Header = styled.View`
@@ -101,13 +105,6 @@ const Header = styled.View`
   flex-direction: row;
   margin-top: 20px;
   margin-bottom: 20px;
-`
-
-const TodoInput = styled.TextInput`
-  padding: 20px 10px;
-  border: 1px solid lightgrey;
-  border-radius: 4px;
-  background-color: white;
 `
 
 const CompletedText = styled.Text`
