@@ -13,10 +13,7 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
 
   // TODO: Better handling for empty input
   const handleEndEditing = () => {
-    console.log("ended editing")
-    console.log(inputValue)
     if (!inputValue.trim()) return
-    console.log('Sumbitting')
     onSubmit(inputValue)
   }
   return (
