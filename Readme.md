@@ -12,10 +12,11 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 ## Todo:
 ### Now
 - [ ] Design
-- [ ] Allow todos to be checked off
-- [ ] Allow todos to be edited
+- [x] Allow todos to be checked off
+- [ ] Add settings page
 - [ ] Delete Todos older than two days
 - [ ] Display todos from the last day for import
+- [ ] Allow todos to be edited
 - [ ] Release
 
 ### Later
