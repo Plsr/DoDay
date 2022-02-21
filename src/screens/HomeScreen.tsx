@@ -9,7 +9,7 @@ import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 
-
+// TODO: Prop types
 export default function HomeScreen({ navigation }) {
   const [todoValue, setTodoValue] = useState("")
   const [todos, setTodos] = useState<Todo[]>([])

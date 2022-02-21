@@ -4,6 +4,8 @@ import styled from "styled-components/native";
 import { Feather } from '@expo/vector-icons';
 import { deleteAllTodos } from '../util/TodoStorage';
 
+// TODO: Add "are you sure" prompt
+// TODO: Prop types
 export default function SettingsScreen({ navigation }) {
   const handleBackPress = () => {
     navigation.navigate('Home')
@@ -13,6 +15,7 @@ export default function SettingsScreen({ navigation }) {
     deleteAllTodos()
     navigation.reset({
       index: 0,
+      // TODO: Export routes somewhere
       routes: [{ name: 'Home' }]
     })
   }
