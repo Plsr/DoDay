@@ -13,7 +13,7 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 ### Now
 - [ ] Design
 - [x] Allow todos to be checked off
-- [ ] Add settings page
+- [x] Add settings page
 - [ ] Better way to add todos (plus button + overlay?)
 - [ ] Add splash screen
 - [ ] Delete Todos older than two days
