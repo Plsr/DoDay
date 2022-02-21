@@ -79,7 +79,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <TodoForm onSubmit={handlePress} />
       </Modal>
       <FloatingButton onPress={() => setModalVisible(true)} >
-        <Feather name="plus" size={24} color="#fff" />
+        <Feather name="plus" size={24} color="#ffffff" />
       </FloatingButton>
       <StatusBar style="auto" />
     </ScreenWrapper>
