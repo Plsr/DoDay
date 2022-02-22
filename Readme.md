@@ -14,8 +14,8 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 - [ ] Design
 - [x] Allow todos to be checked off
 - [x] Add settings page
-- [ ] Better way to add todos (plus button + overlay?)
-- [ ] Add splash screen
+- [x] Better way to add todos (plus button + overlay?)
+- [x] Add splash screen
 - [ ] Delete Todos older than two days
 - [ ] Display todos from the last day for import
 - [ ] Allow todos to be edited

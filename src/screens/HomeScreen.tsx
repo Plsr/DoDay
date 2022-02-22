@@ -1,38 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import TodoItem from '../components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from '../util/Todo'
-import { saveTodo, updateTodo, getTodos } from '../util/TodoStorage';
+import { saveTodo, updateTodo } from '../util/TodoStorage';
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
-import { TouchableOpacity, View, TextInput, Button } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
 
 
 type HomeScreenProps = {
-  navigation: NavigationProp<ParamListBase>
+  navigation: NavigationProp<ParamListBase>,
+  route: {
+    params: {
+      todos: Todo[]
+    }
+  }
 }
 
 // TOOD: Smaller components for modal etc
 // TODO: Fix longer todo texts
 // TODO: ScrollView
-export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const [todos, setTodos] = useState<Todo[]>([])
+export default function HomeScreen({ navigation, route }: HomeScreenProps) {
+  const [todos, setTodos] = useState<Todo[]>(route.params.todos)
   const [modalVisible, setModalVisible] = useState(false)
-
-  useEffect(() => {
-    initialGetTodos()
-  }, [])
-
-
-  const initialGetTodos = async () => {
-    const todos = await getTodos()
-    setTodos(todos?.todos ? todos.todos : [])
-  }
 
   const handlePress = async (todoValue: string) => {
     if(!todoValue) return
@@ -58,7 +53,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <Header>
         <TitleText>Today</TitleText>
         <TouchableOpacity onPress={handleSettingsPress}>
-          <Feather name="settings" size={24} color="1e242b" />
+          <Feather name="settings" size={24} color="#1e242b" />
         </TouchableOpacity>
       </Header>
       { todos.map((todo) => {
