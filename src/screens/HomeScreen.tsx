@@ -7,7 +7,7 @@ import { saveTodo, updateTodo } from '../util/TodoStorage';
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
@@ -24,7 +24,6 @@ type HomeScreenProps = {
 
 // TOOD: Smaller components for modal etc
 // TODO: Fix longer todo texts
-// TODO: ScrollView
 export default function HomeScreen({ navigation, route }: HomeScreenProps) {
   const [todos, setTodos] = useState<Todo[]>(route.params.todos)
   const [modalVisible, setModalVisible] = useState(false)
@@ -50,33 +49,36 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
 
   return (
     <ScreenWrapper>
-      <Header>
-        <TitleText>Today</TitleText>
-        <TouchableOpacity onPress={handleSettingsPress}>
-          <Feather name="settings" size={24} color="#1e242b" />
-        </TouchableOpacity>
-      </Header>
-      { todos.map((todo) => {
-        if (todo.isCompleted === true) return
-        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-      })}
-      <CompletedText>Completed Todos</CompletedText>
-      { todos.map((todo) => {
-        if (todo.isCompleted === false) return
-        return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
-      })}
-      <Modal
-        style={{ justifyContent: 'flex-end', marginBottom: 60 }}
-        isVisible={modalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        avoidKeyboard
-      >
-        <TodoForm onSubmit={handlePress} />
-      </Modal>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Header>
+          <TitleText>Today</TitleText>
+          <TouchableOpacity onPress={handleSettingsPress}>
+            <Feather name="settings" size={24} color="#1e242b" />
+          </TouchableOpacity>
+        </Header>
+        { todos.map((todo) => {
+          if (todo.isCompleted === true) return
+          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+        })}
+        <CompletedText>Completed Todos</CompletedText>
+        { todos.map((todo) => {
+          if (todo.isCompleted === false) return
+          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+        })}
+        <Modal
+          style={{ justifyContent: 'flex-end', marginBottom: 60 }}
+          isVisible={modalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+          avoidKeyboard
+        >
+          <TodoForm onSubmit={handlePress} />
+        </Modal>
+
+        <StatusBar style="auto" />
+      </ScrollView>
       <FloatingButton onPress={() => setModalVisible(true)} >
-        <Feather name="plus" size={24} color="#ffffff" />
-      </FloatingButton>
-      <StatusBar style="auto" />
+          <Feather name="plus" size={24} color="#ffffff" />
+        </FloatingButton>
     </ScreenWrapper>
   );
 }
