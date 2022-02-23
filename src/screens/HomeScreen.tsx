@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import TodoItem from '../components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from '../util/Todo'
@@ -11,21 +11,16 @@ import { ScrollView, TouchableOpacity } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
+import { TodoContext } from '../util/context'
 
 
 type HomeScreenProps = {
-  navigation: NavigationProp<ParamListBase>,
-  route: {
-    params: {
-      todos: Todo[]
-    }
-  }
+  navigation: NavigationProp<ParamListBase>
 }
 
 // TOOD: Smaller components for modal etc
-// TODO: Fix longer todo texts
-export default function HomeScreen({ navigation, route }: HomeScreenProps) {
-  const [todos, setTodos] = useState<Todo[]>(route.params.todos)
+export default function HomeScreen({ navigation }: HomeScreenProps) {
+  const { todos, setTodos } = useContext(TodoContext)
   const [modalVisible, setModalVisible] = useState(false)
 
   const handlePress = async (todoValue: string) => {

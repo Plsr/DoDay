@@ -5,23 +5,24 @@ import { Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { deleteAllTodos } from '../util/TodoStorage';
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { TodoContext } from "../util/context";
+import { useContext } from 'react'
 
-// TODO: Add "are you sure" prompt
 type SettingsScreenProps = {
   navigation: NavigationProp<ParamListBase>
 }
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
+  const { setTodos } = useContext(TodoContext)
+
   const handleBackPress = () => {
     navigation.navigate('Home')
   }
 
   const handleDeleteConfirmed = () => {
     deleteAllTodos()
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Home' }]
-    })
+    setTodos([])
+    navigation.navigate('Home')
   }
 
   const handleDeleteAllPress = async() => {
