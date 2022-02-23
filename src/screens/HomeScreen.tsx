@@ -18,10 +18,16 @@ type HomeScreenProps = {
   navigation: NavigationProp<ParamListBase>
 }
 
+const EMOJI_LIST = ['🔥', '🤘', '💪', '👑', '✨', '⚡️', '🌈', '🏅', '🏆', '📈']
+
 // TOOD: Smaller components for modal etc
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { todos, setTodos } = useContext(TodoContext)
   const [modalVisible, setModalVisible] = useState(false)
+
+  const daysIntoYear = (): number => {
+    return Math.floor((Date.now() - Date.parse(new Date().getFullYear().toString())) / 86400000)
+  }
 
   const handlePress = async (todoValue: string) => {
     if(!todoValue) return
@@ -46,7 +52,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     <ScreenWrapper>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Header>
-          <TitleText>Today</TitleText>
+          <TitleText>{EMOJI_LIST[daysIntoYear() % EMOJI_LIST.length]} Today</TitleText>
           <TouchableOpacity onPress={handleSettingsPress}>
             <Feather name="settings" size={24} color="#1e242b" />
           </TouchableOpacity>
@@ -55,7 +61,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           if (todo.isCompleted === true) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
-        <CompletedText>Completed Todos</CompletedText>
+        <CompletedText>🎉 Completed Todos</CompletedText>
         { todos.map((todo) => {
           if (todo.isCompleted === false) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)

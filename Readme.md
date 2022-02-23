@@ -18,7 +18,6 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 - [x] Add splash screen
 - [ ] Delete Todos older than two days
 - [ ] Display todos from the last day for import
-- [ ] Allow todos to be edited
 - [ ] Release
 
 ### Later
@@ -26,6 +25,8 @@ I [built this for the web in Vue.js](https://github.com/Plsr/DoDee) a few years 
 - [ ] Cloud sync of some kind
 - [ ] Tags & Filterable by tags
 - [ ] Sharing
+- [ ] Allow todos to be edited
+- [ ] Allow todos to be deleted
 
 
 ### Random Ideas
