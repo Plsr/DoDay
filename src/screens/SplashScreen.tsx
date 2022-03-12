@@ -5,6 +5,8 @@ import styled from 'styled-components/native'
 import { getTodos } from '../util/TodoStorage'
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import { TodoContext } from '../util/context'
+import { isYesterday, isToday, parseISO } from 'date-fns'
+import Todo from '../util/Todo'
 
 type SplashScreenProps = {
   navigation: NavigationProp<ParamListBase>
@@ -16,11 +18,35 @@ export default function SplashScreen({ navigation }: SplashScreenProps) {
     initialGetTodos()
   }, [])
 
+  const filterTodos = (todos: Todo[]) => {
+    let importCandidates: Todo[] = []
+    let currentTodos: Todo[] = []
+    let discardedCount = 0
+
+    todos.forEach(todo => {
+      const todoDate = new Date(todo.createdAt)
+      if (isToday(todoDate)) {
+        currentTodos.push(todo)
+        return
+      }
+
+      if (isYesterday(todoDate)) {
+        importCandidates.push(todo)
+        return
+      }
+
+      discardedCount++
+    })
+
+    return [currentTodos, importCandidates]
+  }
+
   const initialGetTodos = async () => {
     const todos = await getTodos()
-    const todoArray = todos ? todos.todos : []
-    setTodos(todoArray)
-    navigation.navigate('Home', { todos: todoArray })
+    const [currentTodos, importCandidates] = filterTodos(todos)
+    console.log(importCandidates)
+    setTodos({currentTodos, importCandidates})
+    navigation.navigate('Home', { todos: todos })
   }
 
   return (

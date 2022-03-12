@@ -12,6 +12,7 @@ import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
 import { TodoContext } from '../util/context'
+import ImportCandidate from '../components/ImportCandidate';
 
 
 type HomeScreenProps = {
@@ -20,7 +21,7 @@ type HomeScreenProps = {
 
 const EMOJI_LIST = ['🔥', '🤘', '💪', '👑', '✨', '⚡️', '🌈', '🏅', '🏆', '📈']
 
-// TOOD: Smaller components for modal etc
+// TODO: Smaller components for modal etc
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { todos, setTodos } = useContext(TodoContext)
   const [modalVisible, setModalVisible] = useState(false)
@@ -32,16 +33,18 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const handlePress = async (todoValue: string) => {
     if(!todoValue) return
     const newTodos = await saveTodo(new Todo(todoValue))
-    setTodos(newTodos ? newTodos : todos)
+    if (!newTodos) return
+
+    setTodos({ ...todos, currentTodos: [...newTodos]})
     setModalVisible(false)
   }
 
   const handleCheckboxPress = async (todo: Todo) => {
-    const currentTodos = [...todos]
+    const currentTodos = [...todos.currentTodos]
     const updateCandidate = currentTodos.find(t => t.id == todo.id)
     if (updateCandidate) updateCandidate.isCompleted = !updateCandidate.isCompleted
     await updateTodo(todo)
-    setTodos([...currentTodos])
+    setTodos({ ...todos, currentTodos: [...currentTodos] })
   }
 
   const handleSettingsPress = () => {
@@ -57,12 +60,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Feather name="settings" size={24} color="#1e242b" />
           </TouchableOpacity>
         </Header>
-        { todos.map((todo) => {
+        {todos.importCandidates.map(importcandidate => {
+          return <ImportCandidate key={importcandidate.id} text={importcandidate.text} />
+        })}
+        { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === true) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
         <CompletedText>🎉 Completed Todos</CompletedText>
-        { todos.map((todo) => {
+        { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === false) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
