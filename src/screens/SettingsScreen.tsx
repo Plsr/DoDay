@@ -1,19 +1,22 @@
 import TitleText from "../components/ScreenTitle";
 import ScreenWrapper from "../components/ScreenWrapper";
 import styled from "styled-components/native";
-import { Alert } from "react-native";
+import { Alert, Text, Button } from "react-native";
 import { Feather } from '@expo/vector-icons';
-import { deleteAllTodos } from '../util/TodoStorage';
+import { deleteAllTodos, saveTodo, filterTodos } from '../util/TodoStorage';
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { TodoContext } from "../util/context";
 import { useContext } from 'react'
+import Todo from '../util/Todo'
+import { sub } from 'date-fns'
+
 
 type SettingsScreenProps = {
   navigation: NavigationProp<ParamListBase>
 }
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
-  const { setTodos } = useContext(TodoContext)
+  const { todos, setTodos } = useContext(TodoContext)
 
   const handleBackPress = () => {
     navigation.navigate('Home')
@@ -40,6 +43,16 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
     );
   }
 
+  const createImportCandidateTodos = async() => {
+    const createdAt = sub(new Date(), { days: 1 })
+    const importCandidate = new Todo('Import candidate', [], false, createdAt)
+    const newTodos = await saveTodo(importCandidate)
+    if (!newTodos) return
+
+    // TODO: Should not be the business of the component
+    setTodos({...todos, importCandidates: [...todos.importCandidates, ...newTodos]})
+  }
+
 
   return (
     <ScreenWrapper>
@@ -53,6 +66,12 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
         onPress={handleDeleteAllPress}
         title="Delete all todos"
       />
+      <Text>Developer Tools</Text>
+      <Button
+        onPress={createImportCandidateTodos}
+        title="Create import candidates"
+      />
+
     </ScreenWrapper>
   )
 }
