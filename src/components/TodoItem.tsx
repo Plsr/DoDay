@@ -6,17 +6,18 @@ import Checkbox from './Checkbox'
 
 type TodoProps = {
   todo: Todo,
-  checkboxPress(todo: Todo): void
+  checkboxPress?(todo: Todo): void,
+  cosmetic?: boolean
 }
 
-export default function TodoItem({ todo, checkboxPress }: TodoProps) {
+export default function TodoItem({ todo, checkboxPress = () => {}, cosmetic = false }: TodoProps) {
 
   const handleCheckboxPress = () => {
     checkboxPress(todo)
   }
   return (
     <Wrapper completed={todo.isCompleted}>
-      <Checkbox onPress={handleCheckboxPress} checked={todo.isCompleted}>
+      <Checkbox onPress={handleCheckboxPress} checked={todo.isCompleted} cosmetic={cosmetic} >
         { todo.isCompleted && <Feather name="check" size={12} color="#f5e6e6" /> }
       </Checkbox>
       <TodoTitle completed={todo.isCompleted} >{todo.text}</TodoTitle>
@@ -28,14 +29,8 @@ const Wrapper = styled.View<{ completed: boolean }>`
   padding: 20px;
   display: flex;
   flex-direction: row;
-  width: 100%;
   background-color: #ffffff;
-  shadow-color: #666;
-  shadow-offset: 2px 2px;
-  shadow-opacity: 0.4;
-  shadow-radius: 2px;
   border-radius: 8px;
-  margin-bottom: 20px;
   opacity: ${props => props.completed ? '0.3' : '1'}
 `
 

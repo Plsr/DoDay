@@ -1,60 +1,63 @@
-import { Text } from 'react-native'
 import styled from 'styled-components/native'
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import TodoItem from './TodoItem'
+import Todo from '../util/Todo'
+import { Feather } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type ImportCandidateProps = {
-  text: string
+  todo: Todo,
+  onImportPress: (todo: Todo) => void,
+  onDeletePress: (todo: Todo) => void
 }
 
-export default function ImportCandidate({ text }: ImportCandidateProps ) {
-  const isPressed = useSharedValue(false)
-  const offset = useSharedValue({ x: 0, y: 0 })
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: offset.value.x },
-        { translateY: offset.value.y },
-        { scale: withSpring(isPressed.value ? 1.2 : 1) }
-      ],
-      backgroundColor: isPressed.value ? 'yellow' : 'blue'
-    }
-  })
+export default function ImportCandidate({ todo, onImportPress, onDeletePress }: ImportCandidateProps ) {
 
-  const start = useSharedValue({ x: 0, y: 0 })
-  const gesture = Gesture.Pan()
-    .onBegin(() => {
-      isPressed.value = true
-    })
-    .onUpdate(e => {
-      offset.value = {
-        x: e.translationX + start.value.x,
-        y: 0
-      }
-    })
-    .onEnd(() => {
-      offset.value = {
-        x: start.value.x,
-        y: start.value.y
-      }
-    })
-    .onFinalize(() => {
-      isPressed.value = false;
-    })
+  const handleImportPress = () => {
+    onImportPress(todo)
+  }
 
+  const handleDeletePress = () => {
+    onDeletePress(todo)
+  }
 
+  const renderLeftActions = () => {
+    return (
+      <SwipeActionWrapper>
+        <TouchableOpacity onPress={handleImportPress}>
+          <Feather name="repeat" size={20} color="#1b62bf" />
+        </TouchableOpacity>
+      </SwipeActionWrapper>
+    )
+  }
+
+  const renderRightActions = () => {
+    return (
+      <SwipeActionWrapper>
+        <TouchableOpacity onPress={handleDeletePress}>
+          <Feather name="trash-2" size={20} color="#e62542" />
+        </TouchableOpacity>
+      </SwipeActionWrapper>
+    )
+  }
   return (
-    <GestureDetector gesture={gesture}>
-      <Wrapper style={animatedStyles}>
-        <Text>{ text }</Text>
-      </Wrapper>
-    </GestureDetector>
-
+    <Wrapper>
+      <Swipeable overshootLeft={false} overshootRight={false} renderLeftActions={renderLeftActions} renderRightActions={renderRightActions}>
+        <TodoItem todo={todo} cosmetic />
+      </Swipeable>
+    </Wrapper>
   )
 }
 
-const Wrapper = styled(Animated.View)`
-  background-color: #c6d8f5;
-  padding: 10px;
-  margin-bottom: 10px
+const Wrapper = styled.View`
+  transform: translateX(0);
+  margin-bottom: 20px;
+  border-radius: 9px;
+`
+
+const SwipeActionWrapper = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
 `

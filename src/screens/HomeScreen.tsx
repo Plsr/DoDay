@@ -3,7 +3,7 @@ import { useState, useContext } from 'react'
 import TodoItem from '../components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from '../util/Todo'
-import { saveTodo, updateTodo } from '../util/TodoStorage';
+import { saveTodos, updateTodo, deleteTodo, importTodo, filterTodos } from '../util/TodoStorage';
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
@@ -32,10 +32,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const handlePress = async (todoValue: string) => {
     if(!todoValue) return
-    const newTodos = await saveTodo(new Todo(todoValue))
-    if (!newTodos) return
+    const newTodo = new Todo(todoValue)
+    const updatedTodos = {...todos, currentTodos: [...todos.currentTodos, newTodo]}
+    setTodos(updatedTodos)
+    await saveTodos(updatedTodos)
 
-    setTodos({ ...todos, currentTodos: [...newTodos]})
     setModalVisible(false)
   }
 
@@ -51,6 +52,28 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     navigation.navigate("Settings")
   }
 
+  const removeFromImportCandidates = (todo: Todo): Todo[] => {
+    return todos.importCandidates.filter(importCandidate => (
+      importCandidate.id !== todo.id
+    ))
+  }
+
+  const handleDeleteImportCandidatePress = async (todo: Todo) => {
+    const updatedImportCandidates = removeFromImportCandidates(todo)
+    const newTodos = { ...todos, importCandidates: [...updatedImportCandidates]}
+    setTodos(newTodos)
+    await saveTodos(newTodos)
+  }
+
+  const handleImportTodoPress = async (todo: Todo) => {
+    const updatedImportCandidates = removeFromImportCandidates(todo)
+    todo.createdAt = new Date()
+
+    const newTodos = {currentTodos: [...todos.currentTodos, todo], importCandidates: [...updatedImportCandidates]}
+    setTodos(newTodos)
+    await saveTodos(newTodos)
+  }
+
   return (
     <ScreenWrapper>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -61,7 +84,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </TouchableOpacity>
         </Header>
         {todos.importCandidates.map(importcandidate => {
-          return <ImportCandidate key={importcandidate.id} text={importcandidate.text} />
+          return <ImportCandidate key={importcandidate.id} todo={importcandidate} onDeletePress={handleDeleteImportCandidatePress} onImportPress={handleImportTodoPress} />
         })}
         { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === true) return

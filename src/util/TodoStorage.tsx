@@ -1,20 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isYesterday, isToday } from 'date-fns'
 import Todo from './Todo'
+import { Todos } from './types'
 
 const TODO_STORAGE_KEY = "@doday_todos"
 
+export async function saveTodos(todos: Todos): Promise<boolean> {
+  console.log('todos: ', todos)
+  const todosArray = convertTodosToArray(todos)
+  if (todosArray.length < 1) return false
 
-export async function saveTodo(value: Todo): Promise<Todo[] | null> {
+  const json = JSON.stringify(todosArray)
+  console.log(json)
   try {
-    const [existingTodos, _importCandidates] = filterTodos(await getTodos())
-    const todos = existingTodos.length > 0 ? [...existingTodos, value] : [value]
-    const jsonValue = JSON.stringify({ todos })
-    await AsyncStorage.setItem(TODO_STORAGE_KEY, jsonValue)
-    return todos
-  } catch (e) {
-    console.error(e)
-    return null
+    await AsyncStorage.setItem(TODO_STORAGE_KEY, json)
+    return true
+  } catch (error) {
+    console.error(error)
+    return false
   }
 }
 
@@ -48,15 +51,33 @@ export async function deleteAllTodos(): Promise<boolean> {
   return true
 }
 
+export async function deleteTodo(todo: Todo): Promise<Todo[] | undefined> {
+  try {
+    const existingTodos = await getTodos()
+    const cleanedTodos = existingTodos.filter(existingTodo => existingTodo.id != todo.id)
+    const jsonTodos = JSON.stringify(cleanedTodos)
+    await AsyncStorage.setItem(TODO_STORAGE_KEY, jsonTodos)
+    return cleanedTodos
+  } catch (error) {
+    console.error('Something went wrong')
+    return
+  }
+}
+
 // TODO: Include filter here and return two arrays
 export async function getTodos(): Promise<Todo[]> {
   try {
     const jsonValue = await AsyncStorage.getItem(TODO_STORAGE_KEY)
-    return jsonValue != null ? JSON.parse(jsonValue).todos as Todo[] : []
+    return jsonValue != null ? JSON.parse(jsonValue) as Todo[] : []
   } catch (error) {
     console.error(error)
     return []
   }
+}
+
+export async function importTodo(todo: Todo): Promise<Todo[] | null> {
+  const updatedTodo: Todo = { ...todo, createdAt: new Date() }
+  return await updateTodo(updatedTodo)
 }
 
 export async function updateTodo(todo: Todo): Promise<Todo[] | null> {
@@ -73,5 +94,9 @@ export async function updateTodo(todo: Todo): Promise<Todo[] | null> {
     console.error(error)
     return null
   }
+}
+
+function convertTodosToArray(todos: Todos): Todo[] {
+  return [...todos.currentTodos, ...todos.importCandidates]
 }
 

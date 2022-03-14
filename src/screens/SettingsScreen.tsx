@@ -3,7 +3,7 @@ import ScreenWrapper from "../components/ScreenWrapper";
 import styled from "styled-components/native";
 import { Alert, Text, Button } from "react-native";
 import { Feather } from '@expo/vector-icons';
-import { deleteAllTodos, saveTodo, filterTodos } from '../util/TodoStorage';
+import { deleteAllTodos, filterTodos, saveTodos } from '../util/TodoStorage';
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { TodoContext } from "../util/context";
 import { useContext } from 'react'
@@ -24,7 +24,7 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
 
   const handleDeleteConfirmed = () => {
     deleteAllTodos()
-    setTodos([])
+    setTodos({currentTodos: [], importCandidates: []})
     navigation.navigate('Home')
   }
 
@@ -46,11 +46,9 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const createImportCandidateTodos = async() => {
     const createdAt = sub(new Date(), { days: 1 })
     const importCandidate = new Todo('Import candidate', [], false, createdAt)
-    const newTodos = await saveTodo(importCandidate)
-    if (!newTodos) return
-
-    // TODO: Should not be the business of the component
-    setTodos({...todos, importCandidates: [...todos.importCandidates, ...newTodos]})
+    const newTodos = {...todos, importCandidates: [...todos.importCandidates, importCandidate]}
+    setTodos(newTodos)
+    await saveTodos(newTodos)
   }
 
 
