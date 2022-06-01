@@ -3,15 +3,17 @@ import { useState, useContext } from 'react'
 import TodoItem from '../components/TodoItem'
 import styled from 'styled-components/native'
 import Todo from '../util/Todo'
-import { saveTodo, updateTodo } from '../util/TodoStorage';
+import { saveTodos, updateTodo, deleteTodo, importTodo, filterTodos } from '../util/TodoStorage';
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity, Text } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
 import { TodoContext } from '../util/context'
+import ImportCandidate from '../components/ImportCandidate';
+import ImportCandidatesStack from '../components/ImportCandidatesStack';
 
 
 type HomeScreenProps = {
@@ -20,7 +22,7 @@ type HomeScreenProps = {
 
 const EMOJI_LIST = ['🔥', '🤘', '💪', '👑', '✨', '⚡️', '🌈', '🏅', '🏆', '📈']
 
-// TOOD: Smaller components for modal etc
+// TODO: Smaller components for modal etc
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { todos, setTodos } = useContext(TodoContext)
   const [modalVisible, setModalVisible] = useState(false)
@@ -31,21 +33,46 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const handlePress = async (todoValue: string) => {
     if(!todoValue) return
-    const newTodos = await saveTodo(new Todo(todoValue))
-    setTodos(newTodos ? newTodos : todos)
+    const newTodo = new Todo(todoValue)
+    const updatedTodos = {...todos, currentTodos: [...todos.currentTodos, newTodo]}
+    setTodos(updatedTodos)
+    await saveTodos(updatedTodos)
+
     setModalVisible(false)
   }
 
   const handleCheckboxPress = async (todo: Todo) => {
-    const currentTodos = [...todos]
+    const currentTodos = [...todos.currentTodos]
     const updateCandidate = currentTodos.find(t => t.id == todo.id)
     if (updateCandidate) updateCandidate.isCompleted = !updateCandidate.isCompleted
     await updateTodo(todo)
-    setTodos([...currentTodos])
+    setTodos({ ...todos, currentTodos: [...currentTodos] })
   }
 
   const handleSettingsPress = () => {
     navigation.navigate("Settings")
+  }
+
+  const removeFromImportCandidates = (todo: Todo): Todo[] => {
+    return todos.importCandidates.filter(importCandidate => (
+      importCandidate.id !== todo.id
+    ))
+  }
+
+  const handleDeleteImportCandidatePress = async (todo: Todo) => {
+    const updatedImportCandidates = removeFromImportCandidates(todo)
+    const newTodos = { ...todos, importCandidates: [...updatedImportCandidates]}
+    setTodos(newTodos)
+    await saveTodos(newTodos)
+  }
+
+  const handleImportTodoPress = async (todo: Todo) => {
+    const updatedImportCandidates = removeFromImportCandidates(todo)
+    todo.createdAt = new Date()
+
+    const newTodos = {currentTodos: [...todos.currentTodos, todo], importCandidates: [...updatedImportCandidates]}
+    setTodos(newTodos)
+    await saveTodos(newTodos)
   }
 
   return (
@@ -57,12 +84,23 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Feather name="settings" size={24} color="#1e242b" />
           </TouchableOpacity>
         </Header>
-        { todos.map((todo) => {
+        { todos.importCandidates.length > 0 && (
+          <ImportsWrapper>
+            <ImportTitle>Import from yesterday</ImportTitle>
+            <ImportCandidatesStack
+              importCandidates={[...todos.importCandidates]}
+              onDeletePress={handleDeleteImportCandidatePress}
+              onImportPress={handleImportTodoPress}
+            />
+          </ImportsWrapper>
+
+        )}
+        { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === true) return
-          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+          return (<StyledTodo key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
         <CompletedText>🎉 Completed Todos</CompletedText>
-        { todos.map((todo) => {
+        { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === false) return
           return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
@@ -110,5 +148,20 @@ const CompletedText = styled.Text`
   font-weight: 700;
   color: #1e242b;
   margin-bottom: 20px;
+  margin-top: 40px;
 `
 
+const ImportTitle = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e242b;
+  margin-bottom: 10px;
+`
+
+const StyledTodo = styled(TodoItem)`
+  margin-bottom: 10px;
+`
+
+const ImportsWrapper = styled.View`
+  margin-bottom: 20px;
+`

@@ -7,11 +7,11 @@ export default class Todo {
   isCompleted: boolean;
   id: string;
 
-  constructor(text: string, tags: string[] = [], isCompleted = false) {
+  constructor(text: string, tags: string[] = [], isCompleted = false, createdAt = new Date()) {
     this.text = text
     this.tags = [...tags]
     this.isCompleted = isCompleted
-    this.createdAt = new Date()
+    this.createdAt = createdAt // TODO: Make sure this will only work in debug mode?
     this.id = uuid.v4() as string
   }
 }
