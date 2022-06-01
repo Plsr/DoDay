@@ -2,7 +2,7 @@ import { ActivityIndicator } from 'react-native'
 import { useEffect, useContext } from 'react'
 import ScreenWrapper from '../components/ScreenWrapper'
 import styled from 'styled-components/native'
-import { getTodos, filterTodos } from '../util/TodoStorage'
+import { getTodos, filterTodos, deleteAllTodos } from '../util/TodoStorage'
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import { TodoContext } from '../util/context'
 import { isYesterday, isToday, parseISO } from 'date-fns'

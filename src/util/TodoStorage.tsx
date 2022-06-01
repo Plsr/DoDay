@@ -27,6 +27,7 @@ export const filterTodos = (todos: Todo[] | null): [currentTodos: Todo[], import
   let importCandidates: Todo[] = []
   let currentTodos: Todo[] = []
   let discardedCount = 0
+  console.log(todos)
 
   todos.forEach(todo => {
     const todoDate = new Date(todo.createdAt)
@@ -68,6 +69,7 @@ export async function deleteTodo(todo: Todo): Promise<Todo[] | undefined> {
 export async function getTodos(): Promise<Todo[]> {
   try {
     const jsonValue = await AsyncStorage.getItem(TODO_STORAGE_KEY)
+    console.log(jsonValue)
     return jsonValue != null ? JSON.parse(jsonValue) as Todo[] : []
   } catch (error) {
     console.error(error)
@@ -87,7 +89,7 @@ export async function updateTodo(todo: Todo): Promise<Todo[] | null> {
     const updatedTodos = existingTodos.map(t => {
       return t.id === todo.id ? todo : t
     })
-    const jsonValue = JSON.stringify({ todos: updatedTodos })
+    const jsonValue = JSON.stringify(updatedTodos)
     await AsyncStorage.setItem(TODO_STORAGE_KEY, jsonValue)
     return updatedTodos
   } catch (error) {

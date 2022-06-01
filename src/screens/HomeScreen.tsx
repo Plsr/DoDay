@@ -7,12 +7,13 @@ import { saveTodos, updateTodo, deleteTodo, importTodo, filterTodos } from '../u
 import TitleText from '../components/ScreenTitle';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { Feather } from '@expo/vector-icons';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView, TouchableOpacity, Text } from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import Modal from "react-native-modal";
 import TodoForm from '../components/TodoForm'
 import { TodoContext } from '../util/context'
 import ImportCandidate from '../components/ImportCandidate';
+import ImportCandidatesStack from '../components/ImportCandidatesStack';
 
 
 type HomeScreenProps = {
@@ -83,12 +84,20 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Feather name="settings" size={24} color="#1e242b" />
           </TouchableOpacity>
         </Header>
-        {todos.importCandidates.map(importcandidate => {
-          return <ImportCandidate key={importcandidate.id} todo={importcandidate} onDeletePress={handleDeleteImportCandidatePress} onImportPress={handleImportTodoPress} />
-        })}
+        { todos.importCandidates.length > 0 && (
+          <>
+            <ImportTitle>Import from yesterday</ImportTitle>
+            <ImportCandidatesStack
+              importCandidates={[...todos.importCandidates]}
+              onDeletePress={handleDeleteImportCandidatePress}
+              onImportPress={handleImportTodoPress}
+            />
+          </>
+
+        )}
         { todos.currentTodos.map((todo) => {
           if (todo.isCompleted === true) return
-          return (<TodoItem key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
+          return (<StyledTodo key={todo.id} todo={todo} checkboxPress={handleCheckboxPress} />)
         })}
         <CompletedText>🎉 Completed Todos</CompletedText>
         { todos.currentTodos.map((todo) => {
@@ -139,5 +148,16 @@ const CompletedText = styled.Text`
   font-weight: 700;
   color: #1e242b;
   margin-bottom: 20px;
+  margin-top: 40px;
 `
 
+const ImportTitle = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e242b;
+  margin-bottom: 10px;
+`
+
+const StyledTodo = styled(TodoItem)`
+  margin-bottom: 10px;
+`
