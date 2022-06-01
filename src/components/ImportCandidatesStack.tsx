@@ -19,7 +19,7 @@ export default function ImportCandidatesStack({ importCandidates, onDeletePress,
     )
   } else {
     return (
-      <Wrapper>
+      <Wrapper stackSize={importCandidates.length > 2 ? 2 : 1}>
         <ImportCandidateWithShadow
           todo={importCandidates[0]}
           onDeletePress={() => onDeletePress(importCandidates[0])}
@@ -35,8 +35,8 @@ export default function ImportCandidatesStack({ importCandidates, onDeletePress,
   }
 }
 
-const Wrapper = styled.View`
-  position: relative;
+const Wrapper = styled.View<{ stackSize: number}>`
+  margin-bottom: ${props => props.stackSize * -15 }px;
 `
 const BackgroundStack = styled.View<{ level: number }>`
   display: flex;

@@ -85,14 +85,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </TouchableOpacity>
         </Header>
         { todos.importCandidates.length > 0 && (
-          <>
+          <ImportsWrapper>
             <ImportTitle>Import from yesterday</ImportTitle>
             <ImportCandidatesStack
               importCandidates={[...todos.importCandidates]}
               onDeletePress={handleDeleteImportCandidatePress}
               onImportPress={handleImportTodoPress}
             />
-          </>
+          </ImportsWrapper>
 
         )}
         { todos.currentTodos.map((todo) => {
@@ -160,4 +160,8 @@ const ImportTitle = styled.Text`
 
 const StyledTodo = styled(TodoItem)`
   margin-bottom: 10px;
+`
+
+const ImportsWrapper = styled.View`
+  margin-bottom: 20px;
 `
